@@ -1,0 +1,27 @@
+{
+    "name": "myparcelcom/timezone-resolver",
+    "description": "Resolves a local timezone from address data using the GeoNames API.",
+    "type": "library",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyParcelCom\\TimezoneResolver\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MyParcelCom\\TimezoneResolver\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
