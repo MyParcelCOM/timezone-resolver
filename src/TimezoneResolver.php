@@ -14,7 +14,7 @@ readonly class TimezoneResolver implements TimezoneResolverInterface
     private Client $client;
 
     public function __construct(
-        private string $username,
+        private string $geoNamesUsername,
         ?Client $client = null,
     ) {
         $this->client = $client ?? new Client();
@@ -80,7 +80,7 @@ readonly class TimezoneResolver implements TimezoneResolverInterface
             'scheme' => 'https',
             'host'   => 'secure.geonames.org',
             'path'   => $endpoint,
-            'query'  => http_build_query([...$query, 'username' => $this->username]),
+            'query'  => http_build_query([...$query, 'username' => $this->geoNamesUsername]),
         ]);
 
         $response = $this->client->get($url);
