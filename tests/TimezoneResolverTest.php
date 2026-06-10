@@ -4,36 +4,39 @@ declare(strict_types=1);
 
 namespace MyParcelCom\TimezoneResolver\Tests;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
+use JsonException;
+use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use MyParcelCom\GuzzleMock\GuzzleMocker;
 use MyParcelCom\TimezoneResolver\TimezoneResolver;
-use PHPUnit\Framework\TestCase;
+
 
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
+
 class TimezoneResolverTest extends TestCase
 {
+    use GuzzleMocker;
+
     public function test_resolves_timezone_by_country_and_postal_code(): void
     {
-        $requestHistoryContainer = [];
+        $history = [];
         $client = $this->mockGuzzle(
-            $requestHistoryContainer,
+            $history,
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-response.json')),
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
 
-        $geoNames = new TimezoneResolver('test-user', $client);
+        $resolver = new TimezoneResolver('test-user', $client);
 
-        assertSame('Europe/Amsterdam', $geoNames->getTimezone('NL', postalCode: '1043NT'));
+        assertSame('Europe/Amsterdam', $resolver->getTimezone('NL', postalCode: '1043NT'));
 
         /** @var Request $req1 */
-        $req1 = $requestHistoryContainer[0]['request'];
+        $req1 = $history[0]['request'];
+
         assertSame('/postalCodeSearchJSON', $req1->getUri()->getPath());
         parse_str($req1->getUri()->getQuery(), $query);
         assertTrue(isset($query['postalcode']));
@@ -41,7 +44,8 @@ class TimezoneResolverTest extends TestCase
         assertSame('test-user', $query['username']);
 
         /** @var Request $req2 */
-        $req2 = $requestHistoryContainer[1]['request'];
+        $req2 = $history[1]['request'];
+
         assertSame('/timezoneJSON', $req2->getUri()->getPath());
         parse_str($req2->getUri()->getQuery(), $query);
         assertTrue(isset($query['lat'], $query['lng']));
@@ -57,9 +61,9 @@ class TimezoneResolverTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
 
-        $geoNames = new TimezoneResolver('test-user', $client);
+        $resolver = new TimezoneResolver('test-user', $client);
 
-        assertSame('Europe/Amsterdam', $geoNames->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
+        assertSame('Europe/Amsterdam', $resolver->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
 
         /** @var Request $req1 */
         $req1 = $requestHistoryContainer[0]['request'];
@@ -89,9 +93,9 @@ class TimezoneResolverTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
         );
 
-        $geoNames = new TimezoneResolver('test-user', $client);
+        $resolver = new TimezoneResolver('test-user', $client);
 
-        assertNull($geoNames->getTimezone('NL', postalCode: '1043NT'));
+        assertNull($resolver->getTimezone('NL', postalCode: '1043NT'));
     }
 
     public function test_returns_null_when_both_postal_code_and_city_return_no_results(): void
@@ -103,9 +107,9 @@ class TimezoneResolverTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
         );
 
-        $geoNames = new TimezoneResolver('test-user', $client);
+        $resolver = new TimezoneResolver('test-user', $client);
 
-        assertNull($geoNames->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
+        assertNull($resolver->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
     }
 
     public function test_uses_https_endpoint(): void
@@ -117,22 +121,13 @@ class TimezoneResolverTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
 
-        $geoNames = new TimezoneResolver('test-user', $client);
-        $geoNames->getTimezone('NL', postalCode: '1043NT');
+        $resolver = new TimezoneResolver('test-user', $client);
+        $resolver->getTimezone('NL', postalCode: '1043NT');
 
         foreach ($requestHistoryContainer as $transaction) {
             /** @var Request $request */
             $request = $transaction['request'];
             assertSame('https', $request->getUri()->getScheme());
         }
-    }
-
-    private function mockGuzzle(array &$requestHistoryContainer, Response ...$responses): Client
-    {
-        $history = Middleware::history($requestHistoryContainer);
-        $handlerStack = HandlerStack::create(new MockHandler($responses));
-        $handlerStack->push($history);
-
-        return new Client(['handler' => $handlerStack]);
     }
 }

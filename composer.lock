@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8bb6632d4201bdb2d4a4c071f0238890",
+    "content-hash": "c78c2b24ecb3744f13a0367547b1536c",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -757,6 +757,47 @@
                 }
             ],
             "time": "2025-08-01T08:46:24+00:00"
+        },
+        {
+            "name": "myparcelcom/guzzle-mock",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MyParcelCOM/guzzle-mock.git",
+                "reference": "f27c28dc52351e658bc7b6954c5e49fc747d27a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MyParcelCOM/guzzle-mock/zipball/f27c28dc52351e658bc7b6954c5e49fc747d27a2",
+                "reference": "f27c28dc52351e658bc7b6954c5e49fc747d27a2",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.9",
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MyParcelCom\\GuzzleMock\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Yoan-Alexander Grigorov",
+                    "email": "yoan@myparcel.com"
+                }
+            ],
+            "description": "Test utilities for working with guzzle mock handler in tests",
+            "support": {
+                "issues": "https://github.com/MyParcelCOM/guzzle-mock/issues",
+                "source": "https://github.com/MyParcelCOM/guzzle-mock/tree/v1.0.1"
+            },
+            "time": "2025-08-14T12:14:13+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -2628,5 +2669,5 @@
         "php": "^8.2"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

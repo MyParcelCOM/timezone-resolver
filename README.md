@@ -7,6 +7,11 @@ A lightweight PHP package that resolves an IANA timezone identifier from address
 - PHP 8.2+
 - A free [GeoNames account](https://www.geonames.org/login) with the web services enabled
 
+To update dependencies on a system without PHP 8 use:
+```shell
+docker run --rm --mount type=bind,source="$(pwd)",target=/app composer:2 composer update
+```
+
 ## Installation
 
 ```bash
