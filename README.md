@@ -4,7 +4,7 @@ A lightweight PHP package that resolves an IANA timezone identifier from address
 
 ## Requirements
 
-- PHP 8.4+
+- PHP 8.2+
 - A free [GeoNames account](https://www.geonames.org/login) with the web services enabled
 
 ## Installation
@@ -16,9 +16,9 @@ composer require myparcelcom/timezone-resolver
 ## Usage
 
 ```php
-use MyParcelCom\TimezoneResolver\GeoNames;
+use MyParcelCom\TimezoneResolver\TimezoneResolver;
 
-$resolver = new GeoNames(username: 'your-geonames-username');
+$resolver = new TimezoneResolver(username: 'your-geonames-username');
 
 $timezone = $resolver->getTimezone(
     countryCode: 'NL',
@@ -63,27 +63,18 @@ class MyService
 The GeoNames username is passed directly to the constructor. In a Laravel application, bind the interface in a service provider:
 
 ```php
-use MyParcelCom\TimezoneResolver\GeoNames;
+use MyParcelCom\TimezoneResolver\TimezoneResolver;
 use MyParcelCom\TimezoneResolver\TimezoneResolverInterface;
 
-$this->app->bind(
+$this->app->singleton(
     TimezoneResolverInterface::class,
-    fn () => new GeoNames(config('services.geonames.username')),
+    fn () => new TimezoneResolver(username: 'my-geonames-username'),
 );
 ```
 
-```php
-// config/services.php
-'geonames' => [
-    'username' => env('GEONAMES_USERNAME'),
-],
-```
-
 ## Testing
-
 ```bash
-composer install
-vendor/bin/phpunit
+docker run -v $(pwd):/app --rm -w /app php:8.4-cli vendor/bin/phpunit
 ```
 
 ## License

@@ -10,14 +10,14 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use MyParcelCom\TimezoneResolver\GeoNames;
+use MyParcelCom\TimezoneResolver\TimezoneResolver;
 use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertSame;
 use function PHPUnit\Framework\assertTrue;
 
-class GeoNamesTest extends TestCase
+class TimezoneResolverTest extends TestCase
 {
     public function test_resolves_timezone_by_country_and_postal_code(): void
     {
@@ -28,7 +28,7 @@ class GeoNamesTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
 
-        $geoNames = new GeoNames('test-user', $client);
+        $geoNames = new TimezoneResolver('test-user', $client);
 
         assertSame('Europe/Amsterdam', $geoNames->getTimezone('NL', postalCode: '1043NT'));
 
@@ -57,7 +57,7 @@ class GeoNamesTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
 
-        $geoNames = new GeoNames('test-user', $client);
+        $geoNames = new TimezoneResolver('test-user', $client);
 
         assertSame('Europe/Amsterdam', $geoNames->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
 
@@ -89,7 +89,7 @@ class GeoNamesTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
         );
 
-        $geoNames = new GeoNames('test-user', $client);
+        $geoNames = new TimezoneResolver('test-user', $client);
 
         assertNull($geoNames->getTimezone('NL', postalCode: '1043NT'));
     }
@@ -103,7 +103,7 @@ class GeoNamesTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
         );
 
-        $geoNames = new GeoNames('test-user', $client);
+        $geoNames = new TimezoneResolver('test-user', $client);
 
         assertNull($geoNames->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
     }
@@ -117,7 +117,7 @@ class GeoNamesTest extends TestCase
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
 
-        $geoNames = new GeoNames('test-user', $client);
+        $geoNames = new TimezoneResolver('test-user', $client);
         $geoNames->getTimezone('NL', postalCode: '1043NT');
 
         foreach ($requestHistoryContainer as $transaction) {

@@ -6,20 +6,21 @@ namespace MyParcelCom\TimezoneResolver;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Uri;
+use JsonException;
 
-class GeoNames implements TimezoneResolverInterface
+readonly class TimezoneResolver implements TimezoneResolverInterface
 {
-    private readonly Client $client;
+    private Client $client;
 
     public function __construct(
-        private readonly string $username,
+        private string $username,
         ?Client $client = null,
     ) {
         $this->client = $client ?? new Client();
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function getTimezone(
         string $countryCode,
@@ -59,7 +60,7 @@ class GeoNames implements TimezoneResolverInterface
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function getTimezoneByCoordinates(float $lat, float $lng): ?string
     {
@@ -69,7 +70,7 @@ class GeoNames implements TimezoneResolverInterface
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function request(string $endpoint, array $query): array
     {

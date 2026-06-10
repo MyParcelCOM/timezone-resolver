@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace MyParcelCom\TimezoneResolver;
 
+use JsonException;
+
 interface TimezoneResolverInterface
 {
     /**
@@ -11,7 +13,7 @@ interface TimezoneResolverInterface
      *
      * Returns null when no timezone can be determined.
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function getTimezone(
         string $countryCode,
