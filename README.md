@@ -73,7 +73,7 @@ use MyParcelCom\TimezoneResolver\TimezoneResolverInterface;
 
 $this->app->singleton(
     TimezoneResolverInterface::class,
-    fn () => new TimezoneResolver(username: 'my-geonames-username'),
+    fn () => new TimezoneResolver('my-geonames-username'),
 );
 ```
 
