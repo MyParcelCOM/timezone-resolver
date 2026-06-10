@@ -53,9 +53,9 @@ class TimezoneResolverTest extends TestCase
 
     public function test_falls_back_to_city_when_postal_code_returns_no_results(): void
     {
-        $requestHistoryContainer = [];
+        $history = [];
         $client = $this->mockGuzzle(
-            $requestHistoryContainer,
+            $history,
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-response.json')),
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
@@ -66,19 +66,19 @@ class TimezoneResolverTest extends TestCase
         assertSame('Europe/Amsterdam', $resolver->getTimezone('NL', postalCode: '1043NT', city: 'Amsterdam'));
 
         /** @var Request $req1 */
-        $req1 = $requestHistoryContainer[0]['request'];
+        $req1 = $history[0]['request'];
         parse_str($req1->getUri()->getQuery(), $query);
         assertTrue(isset($query['postalcode']));
         assertSame('1043NT', $query['postalcode']);
 
         /** @var Request $req2 */
-        $req2 = $requestHistoryContainer[1]['request'];
+        $req2 = $history[1]['request'];
         parse_str($req2->getUri()->getQuery(), $query);
         assertTrue(isset($query['placename']));
         assertSame('Amsterdam', $query['placename']);
 
         /** @var Request $req3 */
-        $req3 = $requestHistoryContainer[2]['request'];
+        $req3 = $history[2]['request'];
         assertSame('/timezoneJSON', $req3->getUri()->getPath());
         parse_str($req3->getUri()->getQuery(), $query);
         assertTrue(isset($query['lat'], $query['lng']));
@@ -86,9 +86,9 @@ class TimezoneResolverTest extends TestCase
 
     public function test_returns_null_when_no_postal_code_results_and_no_city_given(): void
     {
-        $requestHistoryContainer = [];
+        $history = [];
         $client = $this->mockGuzzle(
-            $requestHistoryContainer,
+            $history,
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
         );
@@ -100,9 +100,9 @@ class TimezoneResolverTest extends TestCase
 
     public function test_returns_null_when_both_postal_code_and_city_return_no_results(): void
     {
-        $requestHistoryContainer = [];
+        $history = [];
         $client = $this->mockGuzzle(
-            $requestHistoryContainer,
+            $history,
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-empty-response.json')),
         );
@@ -114,9 +114,9 @@ class TimezoneResolverTest extends TestCase
 
     public function test_uses_https_endpoint(): void
     {
-        $requestHistoryContainer = [];
+        $history = [];
         $client = $this->mockGuzzle(
-            $requestHistoryContainer,
+            $history,
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-postal-code-search-response.json')),
             new Response(200, body: file_get_contents(__DIR__ . '/Stubs/geo-names-timezone-search-response.json')),
         );
@@ -124,7 +124,7 @@ class TimezoneResolverTest extends TestCase
         $resolver = new TimezoneResolver('test-user', $client);
         $resolver->getTimezone('NL', postalCode: '1043NT');
 
-        foreach ($requestHistoryContainer as $transaction) {
+        foreach ($history as $transaction) {
             /** @var Request $request */
             $request = $transaction['request'];
             assertSame('https', $request->getUri()->getScheme());
